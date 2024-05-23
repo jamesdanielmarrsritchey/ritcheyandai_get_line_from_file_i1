@@ -1,0 +1,216 @@
+jamesdanielmarrsritchey: Using C++, write a program that reads from a file one line at a time, until it reaches a specific line number, and then returns that line. Arguments are passed from the commandline by the user. Arguments all have prefixes identifying them. If the program reaches the specified line number, it should return the line, and exit 0. Otherwise it should return bool false, and exit 1.
+
+GitHub Copilot: Here's a simple C++ program that accomplishes this. It uses the `fstream` library to read from the file, and the `iostream` library for input/output. It also uses the `cstdlib` library for the `exit` function.
+
+```cpp
+#include <fstream>
+#include <iostream>
+#include <cstdlib>
+
+int main(int argc, char *argv[]) {
+    std::string filename;
+    int targetLineNum = 0;
+
+    // Parse command line arguments
+    for (int i = 1; i < argc; i++) {
+        std::string arg = argv[i];
+        if (arg.substr(0, 2) == "-f") {
+            filename = arg.substr(2);
+        } else if (arg.substr(0, 2) == "-l") {
+            targetLineNum = std::stoi(arg.substr(2));
+        }
+    }
+
+    std::ifstream
+
+ file
+
+(filename);
+    if (!file.is_open()) {
+        std::cerr << "Could not open file: " << filename << std::endl;
+        exit(1);
+    }
+
+    std::string line;
+    int lineNum = 0;
+    while (std::getline(file, line)) {
+        lineNum++;
+        if (lineNum == targetLineNum) {
+            std::cout << line << std::endl;
+            exit(0);
+        }
+    }
+
+    std::cerr << "Line number out of range" << std::endl;
+    exit(1);
+}
+```
+
+This program expects two command line arguments: `-f` followed by the filename, and `-l` followed by the line number. For example, to read line 10 from a file named `file.txt`, you would run `./program -ffile.txt -l10`.
+
+The program opens the file and reads it line by line. If it reaches the target line number, it prints that line and exits with a status of 0. If it reaches the end of the file without finding the target line, it prints an error message and exits with a status of 1.
+
+jamesdanielmarrsritchey: Arguments should use '--' instead of '-'.
+
+GitHub Copilot: Sure, here's the updated version of the program that uses `--` for command line arguments:
+
+```cpp
+#include <fstream>
+#include <iostream>
+#include <cstdlib>
+
+int main(int argc, char *argv[]) {
+    std::string filename;
+    int targetLineNum = 0;
+
+    // Parse command line arguments
+    for (int i = 1; i < argc; i++) {
+        std::string arg = argv[i];
+        if (arg.substr(0, 3) == "--f") {
+            filename = arg.substr(3);
+        } else if (arg.substr(0, 3) == "--l") {
+            targetLineNum = std::stoi(arg.substr(3));
+        }
+    }
+
+    std::ifstream
+
+ file
+
+(filename);
+    if (!file.is_open()) {
+        std::cerr << "Could not open file: " << filename << std::endl;
+        exit(1);
+    }
+
+    std::string line;
+    int lineNum = 0;
+    while (std::getline(file, line)) {
+        lineNum++;
+        if (lineNum == targetLineNum) {
+            std::cout << line << std::endl;
+            exit(0);
+        }
+    }
+
+    std::cerr << "Line number out of range" << std::endl;
+    exit(1);
+}
+```
+
+Now, to read line 10 from a file named `file.txt`, you would run `./program --ffile.txt --l10`.
+
+jamesdanielmarrsritchey: The file argument should be "--file <value>"
+
+GitHub Copilot: Sure, here's the updated version of the program that uses `--file <value>` for the file argument:
+
+```cpp
+#include <fstream>
+#include <iostream>
+#include <cstdlib>
+
+int main(int argc, char *argv[]) {
+    std::string filename;
+    int targetLineNum = 0;
+
+    // Parse command line arguments
+    for (int i = 1; i < argc; i++) {
+        std::string arg = argv[i];
+        if (arg == "--file") {
+            if (i + 1 < argc) { // Make sure we haven't reached the end of argv
+                filename = argv[++i]; // Increment 'i' so we don't get the argument as the next argv[i].
+            } else { // Uh-oh, these two arguments were not followed by another argument.
+                std::cerr << "--file option requires one argument." << std::endl;
+                return 1;
+            }  
+        } else if (arg.substr(0, 3) == "--l") {
+            targetLineNum = std::stoi(arg.substr(3));
+        }
+    }
+
+    std::ifstream
+
+ file
+
+(filename);
+    if (!file.is_open()) {
+        std::cerr << "Could not open file: " << filename << std::endl;
+        exit(1);
+    }
+
+    std::string line;
+    int lineNum = 0;
+    while (std::getline(file, line)) {
+        lineNum++;
+        if (lineNum == targetLineNum) {
+            std::cout << line << std::endl;
+            exit(0);
+        }
+    }
+
+    std::cerr << "Line number out of range" << std::endl;
+    exit(1);
+}
+```
+
+Now, to read line 10 from a file named `file.txt`, you would run `./program --file file.txt --l10`.
+
+jamesdanielmarrsritchey: The line argument should be "--line_number value"
+
+GitHub Copilot: Sure, here's the updated version of the program that uses `--line_number <value>` for the line number argument:
+
+```cpp
+#include <fstream>
+#include <iostream>
+#include <cstdlib>
+
+int main(int argc, char *argv[]) {
+    std::string filename;
+    int targetLineNum = 0;
+
+    // Parse command line arguments
+    for (int i = 1; i < argc; i++) {
+        std::string arg = argv[i];
+        if (arg == "--file") {
+            if (i + 1 < argc) { // Make sure we haven't reached the end of argv
+                filename = argv[++i]; // Increment 'i' so we don't get the argument as the next argv[i].
+            } else { // Uh-oh, these two arguments were not followed by another argument.
+                std::cerr << "--file option requires one argument." << std::endl;
+                return 1;
+            }  
+        } else if (arg == "--line_number") {
+            if (i + 1 < argc) { // Make sure we haven't reached the end of argv
+                targetLineNum = std::stoi(argv[++i]); // Increment 'i' so we don't get the argument as the next argv[i].
+            } else { // Uh-oh, these two arguments were not followed by another argument.
+                std::cerr << "--line_number option requires one argument." << std::endl;
+                return 1;
+           
+
+ }
+
+  
+        }
+    }
+
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Could not open file: " << filename << std::endl;
+        exit(1);
+    }
+
+    std::string line;
+    int lineNum = 0;
+    while (std::getline(file, line)) {
+        lineNum++;
+        if (lineNum == targetLineNum) {
+            std::cout << line << std::endl;
+            exit(0);
+        }
+    }
+
+    std::cerr << "Line number out of range" << std::endl;
+    exit(1);
+}
+```
+
+Now, to read line 10 from a file named `file.txt`, you would run `./program --file file.txt --line_number 10`.
